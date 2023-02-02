@@ -1,0 +1,37 @@
+asacode
+
+# Define the asset properties
+# total supply of the asset
+TOKEN_TOTAL_SUPPLY = 1000
+
+# this function is executed when the smart contract is created
+# it creates the initial distribution of the asset
+on creation {
+    # creates the asset and assigns its properties
+    create asset TOKEN with total_supply=TOKEN_TOTAL_SUPPLY
+    # assigns 50% of the supply to the creator of the smart contract
+    transfer TOKEN, CREATOR, TOKEN_TOTAL_SUPPLY / 2
+    # assigns 25% of the supply to a designated beneficiary
+    transfer TOKEN, BENEFICIARY, TOKEN_TOTAL_SUPPLY / 4
+    # assigns 25% of the supply to a reserve
+    reserve TOKEN, TOKEN_TOTAL_SUPPLY / 4
+}
+
+# this function is executed when a transfer event is detected
+on transfer TOKEN {
+    # enforce a minimum transfer amount
+    require amount >= 1
+
+    # update the total supply of the asset
+    update total_supply TOKEN with total_supply = total_supply - amount
+}
+
+# this function allows the reserve to be used for future development
+# of the project, such as marketing and infrastructure
+function use_reserve(amount:uint) {
+    # check if the caller is authorized to access the reserve
+    require auth(ADMIN)
+
+    # withdraw from the reserve
+    withdraw TOKEN, amount
+}
